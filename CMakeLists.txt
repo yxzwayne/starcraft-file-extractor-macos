@@ -1,27 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(SCAudioExtractor)
 
-set(CMAKE_CXX_STANDARD 11)
+# Change from C++11 to C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Add CascLib subdirectory to build it
+add_subdirectory(src/CascLib)
 
 # Add the executable
 add_executable(extract_audio src/extract_audio.cpp)
 
 # Include directories for CascLib
-include_directories(src/CascLib/src)
+target_include_directories(extract_audio PRIVATE src/CascLib/src)
 
-# Add the CascLib source files
-file(GLOB CASCLIB_SOURCES "src/CascLib/src/*.cpp")
-
-# Add the CascLib library
-add_library(CascLib ${CASCLIB_SOURCES})
-
-# Link CascLib library to the executable
-find_library(CASC_LIB NAMES casc PATHS src/CascLib/casc.framework)
-if(CASC_LIB)
-    target_link_libraries(extract_audio ${CASC_LIB})
-else()
-    message(FATAL_ERROR "casc library not found")
-endif()
-
-set_property(TARGET extract_audio PROPERTY CXX_STANDARD 11)
-set_property(TARGET extract_audio PROPERTY CXX_STANDARD_REQUIRED ON)
+# Link against CascLib
+target_link_libraries(extract_audio PRIVATE casc)
